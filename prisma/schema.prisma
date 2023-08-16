@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id                Int         @id @default(autoincrement())
+  name              String
+  phone             String
+  email             String
+  password          String
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt()
+  user_type         UserType
+  stores            Store[]
+}
+
+
+model Store {
+  id                Int         @id @default(autoincrement())
+  name              String
+  address           String
+  description       String
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt()
+  store_images      StoreImage[]
+  owner_id          Int
+  owner             User        @relation(fields: [owner_id], references: [id])
+  menus             Menu[]
+}
+
+
+model StoreImage {
+  id                Int         @id @default(autoincrement())
+  url               String  
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt()
+  store_id          Int 
+  store             Store       @relation(fields: [store_id], references: [id])
+}
+
+
+model Menu {
+  id                Int         @id @default(autoincrement())
+  name              String
+  description       String
+  remains           Int
+  type              MenuType
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt()
+  store_id          Int
+  store             Store       @relation(fields: [store_id], references: [id])
+  reviews           Review[]
+}
+
+
+model Review {
+  id                Int @id @default(autoincrement())
+  message           String
+  score             Int
+  created_at        DateTime    @default(now())
+  menu_id           Int
+  menu              Menu        @relation(fields: [menu_id], references: [id])
+}
+
+
+enum UserType {
+  SELLER
+  BUYER
+  ADMIN
+}
+
+
+enum MenuType {
+  GROCERY
+  BAKERY
+  KOREAN
+  CAFE
+}
