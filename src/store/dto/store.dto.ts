@@ -25,6 +25,8 @@ export class StoreResponseDto {
     return this.owner_id;
   }
 
+  storeImage: string;
+
   constructor(partial: Partial<StoreResponseDto>) {
     Object.assign(this, partial);
   }
