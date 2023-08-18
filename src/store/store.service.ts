@@ -1,12 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StoreResponseDto } from './dto/store.dto';
+
+interface GetStoresParam {
+  address?: {
+    contains: string;
+  };
+}
 
 @Injectable()
 export class StoreService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getStores(): Promise<StoreResponseDto[]> {
+  async getStores(filters: GetStoresParam): Promise<StoreResponseDto[]> {
+    console.log(filters);
     const stores = await this.prismaService.store.findMany({
       select: {
         id: true,
@@ -20,7 +27,13 @@ export class StoreService {
           take: 1,
         },
       },
+      where: filters,
     });
+
+    if (!stores.length) {
+      throw new NotFoundException();
+    }
+
     /* 방법 1 */
     // return stores.map((store) => new StoreResponseDto(store));
 
