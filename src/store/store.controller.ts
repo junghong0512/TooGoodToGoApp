@@ -50,7 +50,6 @@ export class StoreController {
 
   @Post()
   createStore(@Body() body: CreateStoreDto) {
-    console.log(body);
     return this.storeService.createStore(body);
   }
 

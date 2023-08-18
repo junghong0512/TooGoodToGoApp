@@ -95,9 +95,9 @@ export class StoreService {
       ...img,
       store_id: store.id,
     }));
-    // await this.prismaService.storeImage.createMany({
-    //   data: storeImgs,
-    // });
+    await this.prismaService.storeImage.createMany({
+      data: storeImgs,
+    });
 
     return new StoreResponseDto(store);
   }
