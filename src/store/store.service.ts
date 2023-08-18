@@ -8,12 +8,19 @@ interface GetStoresParam {
   };
 }
 
+interface CreateStoreParams {
+  name: string;
+  address: string;
+  description: string;
+  storeImages: { url: string }[];
+  ownerId: number;
+}
+
 @Injectable()
 export class StoreService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getStores(filters: GetStoresParam): Promise<StoreResponseDto[]> {
-    console.log(filters);
     const stores = await this.prismaService.store.findMany({
       select: {
         id: true,
@@ -52,5 +59,46 @@ export class StoreService {
       delete fetchStore.store_images;
       return new StoreResponseDto(fetchStore);
     });
+  }
+
+  async getStoreById(id: number) {
+    const store = await this.prismaService.store.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException();
+    }
+
+    return new StoreResponseDto(store);
+  }
+
+  async createStore({
+    name,
+    address,
+    description,
+    storeImages,
+    ownerId,
+  }: CreateStoreParams) {
+    const store = await this.prismaService.store.create({
+      data: {
+        name,
+        address,
+        description,
+        owner_id: ownerId,
+      },
+    });
+
+    const storeImgs = storeImages.map((img) => ({
+      ...img,
+      store_id: store.id,
+    }));
+    // await this.prismaService.storeImage.createMany({
+    //   data: storeImgs,
+    // });
+
+    return new StoreResponseDto(store);
   }
 }

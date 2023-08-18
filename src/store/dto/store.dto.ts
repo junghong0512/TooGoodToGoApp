@@ -1,4 +1,11 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 export class StoreResponseDto {
   id: number;
@@ -30,4 +37,33 @@ export class StoreResponseDto {
   constructor(partial: Partial<StoreResponseDto>) {
     Object.assign(this, partial);
   }
+}
+
+export class Image {
+  @IsString()
+  @IsNotEmpty()
+  url: string;
+}
+
+export class CreateStoreDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Image)
+  storeImages: Image[];
+
+  @IsNumber()
+  @IsNotEmpty()
+  ownerId: number;
 }

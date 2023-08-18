@@ -1,7 +1,16 @@
-import { Controller, Delete, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { StoreService } from './store.service';
-import { StoreResponseDto } from './dto/store.dto';
-import { filter } from 'rxjs';
+import { CreateStoreDto, StoreResponseDto } from './dto/store.dto';
 
 @Controller('store')
 export class StoreController {
@@ -10,7 +19,7 @@ export class StoreController {
   @Get()
   getStores(
     @Query('address') address?: string,
-    @Query('distance') distance?: string,
+    // @Query('distance') distance?: string,
   ): Promise<StoreResponseDto[]> {
     /* 코드 예시
     const price = minPrice || maxPrice ? {
@@ -35,13 +44,14 @@ export class StoreController {
     return this.storeService.getStores(filters);
   }
   @Get(':id')
-  getStore() {
-    return {};
+  getStore(@Param('id', ParseIntPipe) id: number) {
+    return this.storeService.getStoreById(id);
   }
 
   @Post()
-  createStore() {
-    return {};
+  createStore(@Body() body: CreateStoreDto) {
+    console.log(body);
+    return this.storeService.createStore(body);
   }
 
   @Put(':id')
