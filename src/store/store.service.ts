@@ -13,7 +13,6 @@ interface CreateStoreParams {
   address: string;
   description: string;
   storeImages: { url: string }[];
-  ownerId: number;
 }
 
 interface UpdateStoreParams {
@@ -82,19 +81,16 @@ export class StoreService {
     return new StoreResponseDto(store);
   }
 
-  async createStore({
-    name,
-    address,
-    description,
-    storeImages,
-    ownerId,
-  }: CreateStoreParams) {
+  async createStore(
+    { name, address, description, storeImages }: CreateStoreParams,
+    userId: number,
+  ) {
     const store = await this.prismaService.store.create({
       data: {
         name,
         address,
         description,
-        owner_id: ownerId,
+        owner_id: userId,
       },
     });
 

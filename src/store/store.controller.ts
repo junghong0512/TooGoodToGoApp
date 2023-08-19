@@ -15,6 +15,7 @@ import {
   StoreResponseDto,
   UpdateStoreDto,
 } from './dto/store.dto';
+import { User, UserInfo } from 'src/user/decorators/user.decorator';
 
 @Controller('store')
 export class StoreController {
@@ -53,8 +54,8 @@ export class StoreController {
   }
 
   @Post()
-  createStore(@Body() body: CreateStoreDto) {
-    return this.storeService.createStore(body);
+  createStore(@Body() body: CreateStoreDto, @User() user: UserInfo) {
+    return this.storeService.createStore(body, user?.id);
   }
 
   @Put(':id')
