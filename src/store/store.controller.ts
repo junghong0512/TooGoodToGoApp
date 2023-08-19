@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { StoreService } from './store.service';
 import {
@@ -59,15 +60,31 @@ export class StoreController {
   }
 
   @Put(':id')
-  updateStore(
+  async updateStore(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateStoreDto,
+    @User() user: UserInfo,
   ) {
+    const owner = await this.storeService.getOwnerByStoreId(id);
+
+    if (owner.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+
     return this.storeService.updateStore(id, body);
   }
 
   @Delete(':id')
-  deleteStore(@Param('id', ParseIntPipe) id: number) {
+  async deleteStore(
+    @Param('id', ParseIntPipe) id: number,
+    @User() user: UserInfo,
+  ) {
+    const owner = await this.storeService.getOwnerByStoreId(id);
+
+    if (owner.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+
     return this.storeService.deleteStoreById(id);
   }
 }

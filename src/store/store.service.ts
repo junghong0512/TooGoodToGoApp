@@ -139,4 +139,28 @@ export class StoreService {
       },
     });
   }
+
+  async getOwnerByStoreId(id: number) {
+    const store = await this.prismaService.store.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
+        },
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException();
+    }
+
+    return store.owner;
+  }
 }
