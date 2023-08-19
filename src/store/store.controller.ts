@@ -10,7 +10,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { StoreService } from './store.service';
-import { CreateStoreDto, StoreResponseDto } from './dto/store.dto';
+import {
+  CreateStoreDto,
+  StoreResponseDto,
+  UpdateStoreDto,
+} from './dto/store.dto';
 
 @Controller('store')
 export class StoreController {
@@ -54,12 +58,15 @@ export class StoreController {
   }
 
   @Put(':id')
-  updateStore() {
-    return {};
+  updateStore(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateStoreDto,
+  ) {
+    return this.storeService.updateStore(id, body);
   }
 
   @Delete(':id')
-  deleteStore() {
-    return;
+  deleteStore(@Param('id', ParseIntPipe) id: number) {
+    return this.storeService.deleteStoreById(id);
   }
 }

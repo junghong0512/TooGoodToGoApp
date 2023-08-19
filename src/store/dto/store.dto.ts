@@ -3,6 +3,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -66,4 +67,32 @@ export class CreateStoreDto {
   @IsNumber()
   @IsNotEmpty()
   ownerId: number;
+}
+
+export class UpdateStoreDto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  description?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  ownerId?: number;
+
+  //   @IsOptional()
+  //   @IsArray()
+  //   @ValidateNested({ each: true })
+  //   @Type(() => Image)
+  //   storeImages: Image[];
 }

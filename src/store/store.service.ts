@@ -16,6 +16,13 @@ interface CreateStoreParams {
   ownerId: number;
 }
 
+interface UpdateStoreParams {
+  name?: string;
+  address?: string;
+  description?: string;
+  ownerId?: number;
+}
+
 @Injectable()
 export class StoreService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -100,5 +107,40 @@ export class StoreService {
     });
 
     return new StoreResponseDto(store);
+  }
+
+  async updateStore(id: number, data: UpdateStoreParams) {
+    const store = await this.prismaService.store.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException();
+    }
+
+    const updatedStore = await this.prismaService.store.update({
+      where: {
+        id,
+      },
+      data,
+    });
+
+    return new StoreResponseDto(updatedStore);
+  }
+
+  async deleteStoreById(id: number) {
+    await this.prismaService.storeImage.deleteMany({
+      where: {
+        store_id: id,
+      },
+    });
+
+    await this.prismaService.store.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
