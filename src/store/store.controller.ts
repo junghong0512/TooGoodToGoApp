@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { StoreService } from './store.service';
 import {
@@ -17,6 +18,9 @@ import {
   UpdateStoreDto,
 } from './dto/store.dto';
 import { User, UserInfo } from 'src/user/decorators/user.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserType } from '@prisma/client';
 
 @Controller('store')
 export class StoreController {
@@ -54,11 +58,15 @@ export class StoreController {
     return this.storeService.getStoreById(id);
   }
 
+  @Roles(UserType.ADMIN, UserType.SELLER)
+  @UseGuards(AuthGuard)
   @Post()
   createStore(@Body() body: CreateStoreDto, @User() user: UserInfo) {
     return this.storeService.createStore(body, user?.id);
   }
 
+  @Roles(UserType.ADMIN, UserType.SELLER)
+  @UseGuards(AuthGuard)
   @Put(':id')
   async updateStore(
     @Param('id', ParseIntPipe) id: number,
@@ -74,6 +82,8 @@ export class StoreController {
     return this.storeService.updateStore(id, body);
   }
 
+  @Roles(UserType.ADMIN, UserType.SELLER)
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteStore(
     @Param('id', ParseIntPipe) id: number,

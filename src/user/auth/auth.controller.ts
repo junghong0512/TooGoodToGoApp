@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseEnumPipe,
   Post,
@@ -10,6 +11,7 @@ import { AuthService } from './auth.service';
 import { GenerateStoreKeyDto, SigninDto, SignupDto } from '../dto/auth.dto';
 import { UserType } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { User, UserInfo } from '../decorators/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +49,10 @@ export class AuthController {
   @Post('/key')
   generateStoreKey(@Body() { email, userType }: GenerateStoreKeyDto) {
     return this.authService.generateStoreKey(email, userType);
+  }
+
+  @Get('/me')
+  me(@User() user: UserInfo) {
+    return user;
   }
 }
