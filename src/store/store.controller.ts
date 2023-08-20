@@ -59,14 +59,12 @@ export class StoreController {
   }
 
   @Roles(UserType.ADMIN, UserType.SELLER)
-  @UseGuards(AuthGuard)
   @Post()
   createStore(@Body() body: CreateStoreDto, @User() user: UserInfo) {
     return this.storeService.createStore(body, user?.id);
   }
 
   @Roles(UserType.ADMIN, UserType.SELLER)
-  @UseGuards(AuthGuard)
   @Put(':id')
   async updateStore(
     @Param('id', ParseIntPipe) id: number,
@@ -83,7 +81,6 @@ export class StoreController {
   }
 
   @Roles(UserType.ADMIN, UserType.SELLER)
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteStore(
     @Param('id', ParseIntPipe) id: number,
