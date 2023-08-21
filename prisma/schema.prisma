@@ -21,6 +21,9 @@ model User {
   updated_at        DateTime    @updatedAt()
   user_type         UserType
   stores            Store[]
+  reviews           Review[]
+  seller_messages   Message[] @relation("seller_messages")
+  buyer_messages    Message[] @relation("buyer_messages")
 }
 
 
@@ -59,6 +62,7 @@ model Menu {
   store_id          Int
   store             Store       @relation(fields: [store_id], references: [id])
   reviews           Review[]
+  messages          Message[]
 }
 
 
@@ -69,6 +73,20 @@ model Review {
   created_at        DateTime    @default(now())
   menu_id           Int
   menu              Menu        @relation(fields: [menu_id], references: [id])
+  user_id           Int
+  user              User        @relation(fields: [user_id], references: [id])
+}
+
+
+model Message {
+  id                Int @id @default(autoincrement())
+  message           String
+  menu_id           Int
+  menu              Menu  @relation(fields: [menu_id], references: [id])
+  seller_id         Int
+  seller            User  @relation("seller_messages", fields: [seller_id], references: [id])
+  buyer_id          Int
+  buyer             User  @relation("buyer_messages", fields: [buyer_id], references: [id])
 }
 
 
