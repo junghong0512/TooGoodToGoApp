@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StoreResponseDto } from './dto/store.dto';
+import { UserInfo } from 'src/user/decorators/user.decorator';
 
 interface GetStoresParam {
   address?: {
@@ -162,5 +163,53 @@ export class StoreService {
     }
 
     return store.owner;
+  }
+
+  async getOwnerByMenuId(id: number) {
+    const store = await this.prismaService.menu.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        store_id: true,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException();
+    }
+
+    return await this.getOwnerByStoreId(store.store_id);
+  }
+
+  async inquire(buyer: UserInfo, menuId: number, message: string) {
+    const seller = await this.getOwnerByMenuId(menuId);
+
+    return await this.prismaService.message.create({
+      data: {
+        message,
+        seller_id: seller.id,
+        buyer_id: buyer.id,
+        menu_id: menuId,
+      },
+    });
+  }
+
+  getMessagesByMenu(menuId: number) {
+    return this.prismaService.message.findMany({
+      where: {
+        menu_id: menuId,
+      },
+      select: {
+        message: true,
+        buyer: {
+          select: {
+            name: true,
+            phone: true,
+            email: true,
+          },
+        },
+      },
+    });
   }
 }

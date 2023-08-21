@@ -14,6 +14,7 @@ import {
 import { StoreService } from './store.service';
 import {
   CreateStoreDto,
+  InquireDto,
   StoreResponseDto,
   UpdateStoreDto,
 } from './dto/store.dto';
@@ -93,5 +94,30 @@ export class StoreController {
     }
 
     return this.storeService.deleteStoreById(id);
+  }
+
+  @Roles('BUYER')
+  @Post('/:id/inquire')
+  inquire(
+    @Param('id', ParseIntPipe) menuId: number,
+    @User() user: UserInfo,
+    @Body() { message }: InquireDto,
+  ) {
+    return this.storeService.inquire(user, menuId, message);
+  }
+
+  @Roles(UserType.SELLER)
+  @Get('/:id/messages')
+  async getMenuMessages(
+    @Param('id', ParseIntPipe) menuId: number,
+    @User() user: UserInfo,
+  ) {
+    const seller = await this.storeService.getOwnerByMenuId(menuId);
+
+    if (seller.id !== user.id) {
+      throw new UnauthorizedException();
+    }
+
+    return this.storeService.getMessagesByMenu(menuId);
   }
 }

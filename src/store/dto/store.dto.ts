@@ -96,3 +96,9 @@ export class UpdateStoreDto {
   //   @Type(() => Image)
   //   storeImages: Image[];
 }
+
+export class InquireDto {
+  @IsString()
+  @IsNotEmpty()
+  message: string;
+}
