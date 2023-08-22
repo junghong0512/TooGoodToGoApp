@@ -63,7 +63,7 @@ export class StoreService {
     /* 방법 3 */
     return stores.map((store) => {
       const fetchStore = { ...store, storeImage: store.store_images[0].url };
-      delete fetchStore.store_images;
+      // delete fetchStore.store_images;
       return new StoreResponseDto(fetchStore);
     });
   }
