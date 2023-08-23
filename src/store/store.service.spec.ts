@@ -18,6 +18,24 @@ const mockGetStores = [
   },
 ];
 
+const mockStore = {
+  id: 1,
+  name: '스타벅스 압구정역',
+  address: '강남구 압구정동',
+  description: '강남구 압구정동 스타벅스',
+};
+
+const mockStoreImage = [
+  {
+    id: 1,
+    url: 'image_url_1',
+  },
+  {
+    id: 2,
+    url: 'image_url_1',
+  },
+];
+
 describe('StoreService', () => {
   let service: StoreService;
   let prismaService: PrismaService;
@@ -31,6 +49,10 @@ describe('StoreService', () => {
           useValue: {
             store: {
               findMany: jest.fn().mockReturnValue(mockGetStores),
+              create: jest.fn().mockReturnValue(mockStore),
+            },
+            storeImage: {
+              createMany: jest.fn().mockReturnValue(mockStoreImage),
             },
           },
         },
@@ -45,6 +67,7 @@ describe('StoreService', () => {
     expect(service).toBeDefined();
   });
 
+  /* GET STORES */
   describe('getStores', () => {
     const filters = {
       address: {
@@ -88,6 +111,60 @@ describe('StoreService', () => {
       await expect(service.getStores(filters)).rejects.toThrowError(
         NotFoundException,
       );
+    });
+  });
+
+  /* CREATE STORE */
+  describe('createStore', () => {
+    const mockCreateStoreParams = {
+      name: '서울시 마포구 공덕동 스타벅스',
+      address: '서울시 마포구 공덕동',
+      description: '서울시 마포구 공덕동 스타벅스',
+      storeImages: [{ url: 'store_img_url_1' }, { url: 'store_img_url_2' }],
+    };
+
+    it('should call prisma store.create with the correct payload', async () => {
+      const mockCreateStore = jest.fn().mockReturnValue(mockStore);
+
+      jest
+        .spyOn(prismaService.store, 'create')
+        .mockImplementation(mockCreateStore);
+
+      await service.createStore(mockCreateStoreParams, 10);
+
+      expect(mockCreateStore).toBeCalledWith({
+        data: {
+          name: '서울시 마포구 공덕동 스타벅스',
+          address: '서울시 마포구 공덕동',
+          description: '서울시 마포구 공덕동 스타벅스',
+          owner_id: 10,
+        },
+      });
+    });
+
+    it('Should call prisma image.createMany with the correct payload', async () => {
+      const mockCreateManyStoreImage = jest
+        .fn()
+        .mockReturnValue(mockStoreImage);
+
+      jest
+        .spyOn(prismaService.storeImage, 'createMany')
+        .mockImplementation(mockCreateManyStoreImage);
+
+      await service.createStore(mockCreateStoreParams, 10);
+
+      expect(mockCreateManyStoreImage).toBeCalledWith({
+        data: [
+          {
+            store_id: 1,
+            url: 'store_img_url_1',
+          },
+          {
+            store_id: 1,
+            url: 'store_img_url_2',
+          },
+        ],
+      });
     });
   });
 });
